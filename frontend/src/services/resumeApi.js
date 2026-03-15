@@ -17,13 +17,15 @@ export const downloadResume = async (userId) => {
     responseType: 'blob',
   });
   
-  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const blob = new Blob([response.data], { type: 'application/pdf' });
+  const url = window.URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.setAttribute('download', 'resume.pdf');
+  link.setAttribute('download', `resume_${userId}.pdf`);
   document.body.appendChild(link);
   link.click();
   link.remove();
+  window.URL.revokeObjectURL(url);
 };
 
 export const getAtsScore = async (userId) => {

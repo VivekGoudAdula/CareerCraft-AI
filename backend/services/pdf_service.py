@@ -154,26 +154,36 @@ def _generate_reportlab_pdf(data, user):
 
     content = []
     from reportlab.platypus import HRFlowable
-    
+    from xml.sax.saxutils import escape
+
+    def clean_text(text):
+        if text is None:
+            return ""
+        return escape(str(text))
+
     # Header
-    content.append(Paragraph(user.name.upper(), styles['NameHeader']))
+    name_text = clean_text(user.name).upper()
+    content.append(Paragraph(name_text, styles['NameHeader']))
     
     # Build complete contact info string with blue hyperlinks
     contact_parts = []
     if user.email:
-        contact_parts.append(f'<a href="mailto:{user.email}" color="blue">{user.email}</a>')
+        email_clean = clean_text(user.email)
+        contact_parts.append(f'<a href="mailto:{email_clean}" color="blue">{email_clean}</a>')
     if user.mobile:
-        contact_parts.append(user.mobile)
+        contact_parts.append(clean_text(user.mobile))
     
     if data.get("linkedin"):
         url = data["linkedin"].strip()
         if url and not url.startswith('http'): url = 'https://' + url
-        contact_parts.append(f'<a href="{url}" color="blue">LinkedIn</a>')
+        url_clean = clean_text(url)
+        contact_parts.append(f'<a href="{url_clean}" color="blue">LinkedIn</a>')
         
     if data.get("github"):
         url = data["github"].strip()
         if url and not url.startswith('http'): url = 'https://' + url
-        contact_parts.append(f'<a href="{url}" color="blue">GitHub</a>')
+        url_clean = clean_text(url)
+        contact_parts.append(f'<a href="{url_clean}" color="blue">GitHub</a>')
     
     contact_info = "  |  ".join([p for p in contact_parts if p])
     content.append(Paragraph(contact_info, styles['SubHeader']))
@@ -181,33 +191,38 @@ def _generate_reportlab_pdf(data, user):
     # Summary
     content.append(Paragraph("PROFESSIONAL SUMMARY", styles['SectionHeader']))
     content.append(HRFlowable(width="100%", thickness=1, color=colors.black, spaceAfter=8))
-    content.append(Paragraph(data.get('summary', ''), styles['ResumeBodyText']))
+    content.append(Paragraph(clean_text(data.get('summary', '')), styles['ResumeBodyText']))
     
     # Skills
     content.append(Paragraph("TECHNICAL SKILLS", styles['SectionHeader']))
     content.append(HRFlowable(width="100%", thickness=1, color=colors.black, spaceAfter=8))
-    skills = ", ".join(data.get("skills", []))
+    skills = ", ".join([clean_text(s) for s in data.get("skills", [])])
     content.append(Paragraph(skills, styles['ResumeBodyText']))
     
     # Experience
     content.append(Paragraph("PROFESSIONAL EXPERIENCE", styles['SectionHeader']))
     content.append(HRFlowable(width="100%", thickness=1, color=colors.black, spaceAfter=8))
     for exp in data.get("experience", []):
-        content.append(Paragraph(f"<b>{exp.get('role', '')}</b>", styles['ExpTitle']))
-        sub_text = f"{exp.get('company', '')} | {exp.get('duration', '')}"
+        role = clean_text(exp.get('role', ''))
+        content.append(Paragraph(f"<b>{role}</b>", styles['ExpTitle']))
+        company = clean_text(exp.get('company', ''))
+        duration = clean_text(exp.get('duration', ''))
+        sub_text = f"{company} | {duration}"
         content.append(Paragraph(sub_text, styles['ExpSub']))
         
         points = exp.get('points', exp.get('achievements', []))
         for point in points:
-            content.append(Paragraph(f"&bull; {point}", styles['ResumeBodyText']))
+            content.append(Paragraph(f"&bull; {clean_text(point)}", styles['ResumeBodyText']))
         content.append(Spacer(1, 4))
         
     # Projects
     content.append(Paragraph("KEY PROJECTS", styles['SectionHeader']))
     content.append(HRFlowable(width="100%", thickness=1, color=colors.black, spaceAfter=8))
     for proj in data.get("projects", []):
-        content.append(Paragraph(f"<b>{proj.get('name', '')}</b> | {proj.get('tech', '')}", styles['ExpTitle']))
-        content.append(Paragraph(proj.get('description', ''), styles['ResumeBodyText']))
+        name = clean_text(proj.get('name', ''))
+        tech = clean_text(proj.get('tech', ''))
+        content.append(Paragraph(f"<b>{name}</b> | {tech}", styles['ExpTitle']))
+        content.append(Paragraph(clean_text(proj.get('description', '')), styles['ResumeBodyText']))
         content.append(Spacer(1, 4))
         
     # Education
@@ -217,9 +232,9 @@ def _generate_reportlab_pdf(data, user):
     if isinstance(edu_list, dict): edu_list = [edu_list]
     _JUNK_EDU = {"not applicable", "n/a", "null", "none", "na", "", "university", "degree"}
     for edu in edu_list:
-        degree = edu.get('degree', '').strip()
-        college = (edu.get('college') or edu.get('school', '')).strip()
-        year = edu.get('year', '').strip()
+        degree = clean_text(edu.get('degree', '')).strip()
+        college = clean_text(edu.get('college') or edu.get('school', '')).strip()
+        year = clean_text(edu.get('year', '')).strip()
         # Skip entries that are empty or AI-generated junk
         if degree.lower() in _JUNK_EDU and college.lower() in _JUNK_EDU:
             continue

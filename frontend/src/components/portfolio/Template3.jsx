@@ -1,25 +1,9 @@
 import React, { useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Sparkles, Heart, Zap, Github, Linkedin, MessageCircle, Star, ArrowUpRight, GraduationCap, Award, Compass, MousePointer2, Download } from 'lucide-react';
+import { downloadResume } from '../../services/resumeApi';
 
-const downloadResume = async (userId) => {
-  if (!userId) return;
-  const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-  try {
-    const response = await fetch(`${API_URL}/export-resume/${userId}`);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'resume.pdf');
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
-  } catch (err) {
-    console.error('Resume download failed:', err);
-  }
-};
+
 
 const Template3 = ({ data }) => {
   const { user_id, name, role, about, skills, projects, experience, education, achievements, hobbies, contact } = data;
@@ -28,9 +12,16 @@ const Template3 = ({ data }) => {
   const [downloading, setDownloading] = useState(false);
 
   const handleDownload = async () => {
+    if (!user_id) return;
     setDownloading(true);
-    await downloadResume(user_id);
-    setDownloading(false);
+    try {
+      await downloadResume(user_id);
+    } catch (err) {
+      console.error('Resume download failed:', err);
+      alert('Failed to download resume. Please try again later.');
+    } finally {
+      setDownloading(false);
+    }
   };
 
   return (
