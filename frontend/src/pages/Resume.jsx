@@ -20,16 +20,24 @@ const Resume = () => {
       try {
         const userId = localStorage.getItem('userId');
         const userName = localStorage.getItem('userName');
-        const userEmail = localStorage.getItem('userEmail') || ''; // check if saved
+        const userEmail = localStorage.getItem('userEmail') || '';
         
         if (!userId) return;
         
         const userData = { id: userId, name: userName, email: userEmail };
         setUser(userData);
 
-        const profileRes = await api.get(`/profile/${userId}`);
-
-        setProfile(profileRes.data);
+        try {
+          const profileRes = await api.get(`/profile/${userId}`);
+          setProfile(profileRes.data);
+        } catch (profileErr) {
+          if (profileErr?.response?.status === 404) {
+            // User hasn't completed onboarding yet — not a fatal error
+            setProfile(null);
+          } else {
+            console.error("Error fetching profile:", profileErr);
+          }
+        }
 
         try {
           const resumeRes = await getResume(userId);
@@ -38,7 +46,7 @@ const Resume = () => {
           const atsRes = await getAtsScore(userId);
           setAtsData(atsRes);
         } catch (err) {
-          console.log("No resume found yet");
+          // No resume generated yet — expected for new users
         }
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -81,6 +89,25 @@ const Resume = () => {
         <div className="absolute inset-0 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin"></div>
       </div>
       <p className="text-gray-500 font-medium animate-pulse">Loading your workspace...</p>
+    </div>
+  );
+
+  // User hasn't completed onboarding — no profile exists yet
+  if (!profile) return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#fcfcfd] font-inter text-center px-6">
+      <div className="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
+        <User className="w-10 h-10 text-indigo-400" />
+      </div>
+      <h2 className="text-3xl font-black text-gray-900 mb-3 font-outfit">Profile Not Found</h2>
+      <p className="text-gray-500 max-w-md mb-8 leading-relaxed">
+        You haven't completed your profile yet. Please go through the onboarding steps first so our AI can generate a tailored resume for you.
+      </p>
+      <button
+        onClick={() => window.location.href = '/onboarding'}
+        className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-200"
+      >
+        Complete Onboarding →
+      </button>
     </div>
   );
 

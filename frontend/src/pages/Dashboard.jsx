@@ -60,7 +60,10 @@ const Dashboard = () => {
         { label: "Profile Strength",  value: `${d.profile_strength}%`,         icon: <Zap className="w-5 h-5" />,      color: "text-amber-600",  bg: "bg-amber-50"  },
       ]);
     } catch (err) {
-      console.error("Failed to fetch stats", err);
+      // 404 means no profile yet — keep default "—" values, no error log needed
+      if (err?.response?.status !== 404) {
+        console.error("Failed to fetch stats", err);
+      }
     }
   };
 
@@ -80,7 +83,11 @@ const Dashboard = () => {
         { label: "Projects Showcased", status: projects.length > 0 },
       ]);
     } catch (err) {
-      console.error("Failed to fetch profile status", err);
+      // 404 = user exists but hasn't completed onboarding yet — not a real error
+      if (err?.response?.status !== 404) {
+        console.error("Failed to fetch profile status", err);
+      }
+      // profileStatus stays at all-false defaults — checklist will show as incomplete
     }
   };
 
