@@ -210,7 +210,14 @@ const Template1 = ({ data }) => {
               {Object.entries(education).map(([key, value], i) => value && (
                 <div key={i} className="border-l-2 border-indigo-500/20 pl-6 space-y-1">
                   <p className="text-[10px] font-black uppercase text-gray-500 tracking-widest">{key}</p>
-                  <p className="text-lg font-bold">{value}</p>
+                  <p className="text-lg font-bold">
+                    {typeof value === 'object' ? (value.name || value.title || '') : value}
+                  </p>
+                  {typeof value === 'object' && (
+                    <p className="text-sm text-gray-400">
+                      {value.board || value.branch || ''} {value.year && `• ${value.year}`}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
