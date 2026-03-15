@@ -30,6 +30,7 @@ class Profile(Base):
     github = Column(String, nullable=True)
     achievements = Column(Text, nullable=True)
     hobbies = Column(Text, nullable=True)
+    portfolio_views = Column(Integer, default=0, nullable=False, server_default="0")
 
     user = relationship("User", back_populates="profile")
 

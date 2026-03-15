@@ -20,6 +20,11 @@ import api from '../services/api';
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState('User');
+  const [stats, setStats] = useState([
+    { label: "Resumes Generated", value: "—", icon: <FileText className="w-5 h-5" />, color: "text-indigo-600", bg: "bg-indigo-50" },
+    { label: "Portfolio Views",   value: "—", icon: <Eye className="w-5 h-5" />,      color: "text-pink-600",   bg: "bg-pink-50"   },
+    { label: "Profile Strength",  value: "—", icon: <Zap className="w-5 h-5" />,      color: "text-amber-600",  bg: "bg-amber-50"  },
+  ]);
   const [profileStatus, setProfileStatus] = useState([
     { label: "Profile Completed", status: false },
     { label: "Skills Added", status: false },
@@ -41,8 +46,23 @@ const Dashboard = () => {
 
     if (userId) {
       fetchProfileStatus(userId);
+      fetchStats(userId);
     }
   }, [navigate]);
+
+  const fetchStats = async (userId) => {
+    try {
+      const res = await api.get(`/stats/${userId}`);
+      const d = res.data;
+      setStats([
+        { label: "Resumes Generated", value: String(d.resumes_generated),     icon: <FileText className="w-5 h-5" />, color: "text-indigo-600", bg: "bg-indigo-50" },
+        { label: "Portfolio Views",   value: String(d.portfolio_views),        icon: <Eye className="w-5 h-5" />,      color: "text-pink-600",   bg: "bg-pink-50"   },
+        { label: "Profile Strength",  value: `${d.profile_strength}%`,         icon: <Zap className="w-5 h-5" />,      color: "text-amber-600",  bg: "bg-amber-50"  },
+      ]);
+    } catch (err) {
+      console.error("Failed to fetch stats", err);
+    }
+  };
 
   const fetchProfileStatus = async (userId) => {
     try {
@@ -64,11 +84,6 @@ const Dashboard = () => {
     }
   };
 
-  const stats = [
-    { label: "Resumes Generated", value: "12", icon: <FileText className="w-5 h-5" />, color: "text-indigo-600", bg: "bg-indigo-50" },
-    { label: "Portfolio Views", value: "248", icon: <Eye className="w-5 h-5" />, color: "text-pink-600", bg: "bg-pink-50" },
-    { label: "Profile Strength", value: "85%", icon: <Zap className="w-5 h-5" />, color: "text-amber-600", bg: "bg-amber-50" },
-  ];
 
   const dashboardActions = [
     {
