@@ -1,11 +1,36 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Sparkles, Heart, Zap, Github, Linkedin, MessageCircle, Star, ArrowUpRight, GraduationCap, Award, Compass, MousePointer2 } from 'lucide-react';
+import { Sparkles, Heart, Zap, Github, Linkedin, MessageCircle, Star, ArrowUpRight, GraduationCap, Award, Compass, MousePointer2, Download } from 'lucide-react';
+
+const downloadResume = async (userId) => {
+  if (!userId) return;
+  try {
+    const response = await fetch(`http://localhost:8000/export-resume/${userId}`);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'resume.pdf');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error('Resume download failed:', err);
+  }
+};
 
 const Template3 = ({ data }) => {
-  const { name, role, about, skills, projects, experience, education, achievements, hobbies, contact } = data;
+  const { user_id, name, role, about, skills, projects, experience, education, achievements, hobbies, contact } = data;
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll();
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    await downloadResume(user_id);
+    setDownloading(false);
+  };
 
   return (
     <div ref={containerRef} className="bg-[#000000] text-white min-h-screen font-inter selection:bg-indigo-500 selection:text-white overflow-x-hidden">
@@ -25,6 +50,15 @@ const Template3 = ({ data }) => {
         <a href="#details" className="text-[10px] font-black uppercase tracking-widest hover:text-indigo-400 transition-colors">Intel</a>
         <div className="w-1 h-1 rounded-full bg-white/20"></div>
         <a href="#contact" className="text-[10px] font-black uppercase tracking-widest hover:text-indigo-400 transition-colors">Sync</a>
+        <div className="w-1 h-1 rounded-full bg-white/20"></div>
+        <button
+          onClick={handleDownload}
+          disabled={downloading}
+          className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-white transition-colors disabled:opacity-50"
+        >
+          <Download className="w-3.5 h-3.5" />
+          {downloading ? 'Saving...' : 'Resume'}
+        </button>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 relative">
@@ -244,9 +278,14 @@ const Template3 = ({ data }) => {
                         <Linkedin className="w-10 h-10" />
                       </a>
                     )}
-                    <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
-                       <MessageCircle className="w-10 h-10" />
-                    </div>
+                    <button
+                      onClick={handleDownload}
+                      disabled={downloading}
+                      className="w-24 h-24 rounded-full bg-white flex items-center justify-center text-black shadow-2xl hover:scale-110 transition-all flex-col gap-1 disabled:opacity-50"
+                    >
+                      <Download className="w-8 h-8" />
+                      <span className="text-[8px] font-black uppercase tracking-widest">{downloading ? '...' : 'Resume'}</span>
+                    </button>
                  </div>
               </div>
             </motion.div>

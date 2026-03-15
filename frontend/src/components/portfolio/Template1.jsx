@@ -1,9 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, ExternalLink, Code, Terminal, Cpu, Layers, Box, Zap, Command, ChevronRight, GraduationCap, Award, Heart } from 'lucide-react';
+import { Github, Linkedin, Mail, ExternalLink, Code, Terminal, Cpu, Layers, Box, Zap, Command, ChevronRight, GraduationCap, Award, Heart, Download } from 'lucide-react';
+
+const downloadResume = async (userId) => {
+  if (!userId) return;
+  try {
+    const response = await fetch(`http://localhost:8000/export-resume/${userId}`);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'resume.pdf');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error('Resume download failed:', err);
+  }
+};
 
 const Template1 = ({ data }) => {
-  const { name, role, about, skills, projects, experience, education, achievements, hobbies, contact } = data;
+  const { user_id, name, role, about, skills, projects, experience, education, achievements, hobbies, contact } = data;
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    await downloadResume(user_id);
+    setDownloading(false);
+  };
 
   return (
     <div className="bg-[#020617] text-white min-h-screen font-inter selection:bg-indigo-500/30 selection:text-white cyber-grid">
@@ -23,8 +48,13 @@ const Template1 = ({ data }) => {
           <a href="#projects" className="hover:text-indigo-400 transition-colors">Innovations</a>
           <a href="#academic" className="hover:text-indigo-400 transition-colors">Academic</a>
         </div>
-        <button className="bg-white/5 hover:bg-white/10 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 transition-all">
-          Resume.pdf
+        <button
+          onClick={handleDownload}
+          disabled={downloading}
+          className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 transition-all disabled:opacity-50"
+        >
+          <Download className="w-3 h-3" />
+          {downloading ? 'Downloading...' : 'Resume.pdf'}
         </button>
       </nav>
 
@@ -237,6 +267,14 @@ const Template1 = ({ data }) => {
                 <a href={`mailto:${contact.email}`} className="bg-white text-indigo-600 hover:scale-105 px-12 py-5 rounded-2xl font-black font-outfit transition-all uppercase tracking-widest flex items-center justify-center gap-3">
                   Initiate Project <ChevronRight className="w-5 h-5" />
                 </a>
+                <button
+                  onClick={handleDownload}
+                  disabled={downloading}
+                  className="flex items-center justify-center gap-3 bg-black/30 backdrop-blur-md hover:bg-black/50 text-white px-12 py-5 rounded-2xl font-black font-outfit transition-all uppercase tracking-widest border border-white/20 disabled:opacity-50"
+                >
+                  <Download className="w-5 h-5" />
+                  {downloading ? 'Downloading...' : 'Download Resume'}
+                </button>
                 <div className="flex gap-4 justify-center">
                    {contact.linkedin && (
                      <a href={contact.linkedin} target="_blank" rel="noreferrer" className="w-16 h-16 rounded-2xl bg-black/20 backdrop-blur-md flex items-center justify-center border border-white/10 hover:bg-black/40 transition-all cursor-pointer">

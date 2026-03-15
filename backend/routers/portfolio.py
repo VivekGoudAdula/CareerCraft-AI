@@ -36,6 +36,7 @@ def get_portfolio_data(user_id: int, db: Session = Depends(database.get_db)):
     about = resume.summary if resume else f"Passionate {profile.target_role} with expertise in {', '.join(skills[:3])}."
 
     return {
+        "user_id": user.id,
         "name": user.name,
         "role": profile.target_role or "Software Developer",
         "about": about,

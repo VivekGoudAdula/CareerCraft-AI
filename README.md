@@ -120,5 +120,5 @@
 ---
 
 <div align="center">
-Built with ❤️ for the Ignition Era Hackathon
+Built with ❤️ By Vivek Goud Adula for the Ignition Era Hackathon
 </div>

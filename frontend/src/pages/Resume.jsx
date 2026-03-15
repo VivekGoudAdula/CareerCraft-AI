@@ -5,6 +5,7 @@ import api from '../services/api';
 import { generateResume, getResume, downloadResume, getAtsScore } from '../services/resumeApi';
 import ResumePreview from '../components/ResumePreview';
 import AtsScore from '../components/AtsScore';
+import AppNavbar from '../components/AppNavbar';
 
 const Resume = () => {
   const [profile, setProfile] = useState(null);
@@ -85,8 +86,9 @@ const Resume = () => {
 
   return (
     <div className="min-h-screen bg-[#fcfcfd] text-[#0f172a] font-inter">
+      <AppNavbar />
       {/* Dynamic Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute -top-[10%] -left-[5%] w-[40%] h-[40%] bg-indigo-50 rounded-full blur-[120px] opacity-60"></div>
         <div className="absolute top-[20%] -right-[5%] w-[35%] h-[35%] bg-pink-50 rounded-full blur-[120px] opacity-60"></div>
         <div className="absolute -bottom-[10%] left-[20%] w-[30%] h-[30%] bg-blue-50 rounded-full blur-[120px] opacity-60"></div>

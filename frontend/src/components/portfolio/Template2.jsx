@@ -1,9 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Linkedin, Github, ArrowRight, Minus, Plus, AlignLeft, Globe, Award, Sparkles } from 'lucide-react';
+import { Mail, Linkedin, Github, ArrowRight, AlignLeft, Globe, Award, Sparkles, Download } from 'lucide-react';
+
+const downloadResume = async (userId) => {
+  if (!userId) return;
+  try {
+    const response = await fetch(`http://localhost:8000/export-resume/${userId}`);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'resume.pdf');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error('Resume download failed:', err);
+  }
+};
 
 const Template2 = ({ data }) => {
-  const { name, role, about, skills, projects, experience, education, achievements, hobbies, contact } = data;
+  const { user_id, name, role, about, skills, projects, experience, education, achievements, hobbies, contact } = data;
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    await downloadResume(user_id);
+    setDownloading(false);
+  };
 
   return (
     <div className="bg-[#fafaf9] text-[#1c1917] min-h-screen font-inter selection:bg-stone-200">
@@ -22,6 +47,14 @@ const Template2 = ({ data }) => {
             <span className="hover:text-stone-500 transition-colors">Career</span>
             <span className="hover:text-stone-500 transition-colors">About</span>
           </div>
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className="mt-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest border-b-2 border-stone-900 pb-0.5 hover:text-stone-400 hover:border-stone-400 transition-all disabled:opacity-50"
+          >
+            <Download className="w-3 h-3" />
+            {downloading ? 'Downloading...' : 'Download Resume'}
+          </button>
         </div>
       </nav>
 
@@ -210,6 +243,14 @@ const Template2 = ({ data }) => {
               <a href={`mailto:${contact.email}`} className="text-3xl font-black border-b-4 border-stone-900 pb-2 hover:text-stone-400 hover:border-stone-400 transition-all">
                 {contact.email}
               </a>
+              <button
+                onClick={handleDownload}
+                disabled={downloading}
+                className="flex items-center gap-3 bg-stone-900 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-stone-700 transition-all disabled:opacity-50"
+              >
+                <Download className="w-5 h-5" />
+                {downloading ? 'Downloading...' : 'Download Resume'}
+              </button>
               <div className="flex gap-8">
                 {contact.github && <a href={contact.github} target="_blank" rel="noreferrer"><Github className="w-8 h-8 hover:scale-125 transition-transform cursor-pointer" /></a>}
                 {contact.linkedin && <a href={contact.linkedin} target="_blank" rel="noreferrer"><Linkedin className="w-8 h-8 hover:scale-125 transition-transform cursor-pointer" /></a>}

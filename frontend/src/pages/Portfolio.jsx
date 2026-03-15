@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Layout, Eye, Share2, Check, ExternalLink, ArrowRight, Code, Briefcase, User as UserIcon, Palette } from 'lucide-react';
 import api from '../services/api';
-import Navbar from '../components/Navbar';
+import AppNavbar from '../components/AppNavbar';
 import Template1 from '../components/portfolio/Template1';
 import Template2 from '../components/portfolio/Template2';
 import Template3 from '../components/portfolio/Template3';
@@ -88,7 +88,7 @@ const Portfolio = () => {
 
   return (
     <div className="min-h-screen bg-[#fcfcfd] text-[#0f172a] font-inter">
-      <Navbar />
+      <AppNavbar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-12">
