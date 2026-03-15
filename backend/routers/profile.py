@@ -80,17 +80,22 @@ def get_profile(user_id: int, db: Session = Depends(database.get_db)):
     user = db.query(models.User).filter(models.User.id == user_id).first()
     
     import json
+    try:
+        education_data = json.loads(profile.education) if profile.education and profile.education.startswith("{") else {}
+    except Exception:
+        education_data = {}
+
     return {
         "email": user.email if user else "",
         "mobile": user.mobile if user else "",
-        "education": json.loads(profile.education) if profile.education.startswith("{") else profile.education,
+        "education": education_data,
         "skills": profile.skills,
-        "experience": json.loads(profile.experience) if profile.experience.startswith("[") else profile.experience,
-        "projects": json.loads(profile.projects) if profile.projects.startswith("[") else profile.projects,
+        "experience": json.loads(profile.experience) if profile.experience and (profile.experience.startswith("[") or profile.experience.startswith("{")) else profile.experience,
+        "projects": json.loads(profile.projects) if profile.projects and (profile.projects.startswith("[") or profile.projects.startswith("{")) else profile.projects,
         "target_role": profile.target_role,
         "linkedin": profile.linkedin,
         "github": profile.github,
-        "achievements": json.loads(profile.achievements) if profile.achievements and profile.achievements.startswith("[") else profile.achievements,
+        "achievements": json.loads(profile.achievements) if profile.achievements and (profile.achievements.startswith("[") or profile.achievements.startswith("{")) else profile.achievements,
         "hobbies": profile.hobbies
     }
 

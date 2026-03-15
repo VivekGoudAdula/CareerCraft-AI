@@ -314,22 +314,28 @@ const Resume = () => {
               <div className="space-y-4">
                 {profile?.education && (
                   <>
-                    {profile.education.btech && (
+                    {profile.education.btech?.name && (
                       <div className="border-l-2 border-blue-100 pl-4 py-1">
                         <p className="text-sm font-bold text-gray-800 leading-tight">B.Tech / Degree</p>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{profile.education.btech}</p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                          {profile.education.btech.name} {profile.education.btech.branch && `• ${profile.education.btech.branch}`} ({profile.education.btech.year})
+                        </p>
                       </div>
                     )}
-                    {profile.education.intermediate && (
+                    {profile.education.intermediate?.name && (
                       <div className="border-l-2 border-blue-50 pl-4 py-1">
                         <p className="text-sm font-bold text-gray-800 leading-tight">Intermediate / 12th</p>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{profile.education.intermediate}</p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                          {profile.education.intermediate.name} {profile.education.intermediate.board && `• ${profile.education.intermediate.board}`} ({profile.education.intermediate.year})
+                        </p>
                       </div>
                     )}
-                    {profile.education.school && (
+                    {profile.education.school?.name && (
                       <div className="border-l-2 border-blue-50 pl-4 py-1">
                         <p className="text-sm font-bold text-gray-800 leading-tight">High School</p>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{profile.education.school}</p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                          {profile.education.school.name} {profile.education.school.board && `• ${profile.education.school.board}`} ({profile.education.school.year})
+                        </p>
                       </div>
                     )}
                   </>

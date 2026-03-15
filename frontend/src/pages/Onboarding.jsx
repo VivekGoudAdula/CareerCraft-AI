@@ -142,15 +142,21 @@ const Onboarding = () => {
       localStorage.setItem('userName', val);
     }
 
+    // Compute the updated profile synchronously so we can pass it to handleFinish
+    // if this is the last step (setProfile is async — don't rely on it being ready)
+    let updatedProfile;
     if (step.isTags && typeof val === 'string') {
       const tags = val.split(',').map(s => s.trim()).filter(s => s);
-      setProfile(prev => ({ ...prev, [step.key]: tags }));
+      updatedProfile = { ...profile, [step.key]: tags };
+    } else {
+      updatedProfile = { ...profile, [step.key]: val };
     }
+    setProfile(updatedProfile);
 
     if (currentStep < steps.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
-      handleFinish();
+      handleFinish(updatedProfile);  // pass final profile directly
     }
   };
 
@@ -158,25 +164,26 @@ const Onboarding = () => {
     setProfile(prev => ({ ...prev, [key]: val }));
   };
 
-  const handleFinish = async () => {
+  const handleFinish = async (finalProfile) => {
+    // Use passed-in finalProfile (synchronous) or fall back to state
+    const profileToSave = finalProfile || profile;
     setIsFinishing(true);
     try {
       const userId = localStorage.getItem('userId');
-      const storedEmail = localStorage.getItem('userEmail') || profile.email;
-      const storedName = localStorage.getItem('userName') || profile.name;
+      const storedEmail = localStorage.getItem('userEmail') || profileToSave.email;
+      const storedName = localStorage.getItem('userName') || profileToSave.name;
 
       await api.post('/profile', {
-        user_id: userId,           // always send the real DB user id
+        user_id: userId,
         profile_data: {
-          ...profile,
-          email: storedEmail,      // ensure correct email is always sent
+          ...profileToSave,
+          email: storedEmail,
           name: storedName,
         }
       });
     } catch (err) {
       console.error("Profile update failed", err);
     } finally {
-      // For demo, even if it fails we proceed to a "Ready" state
       setTimeout(() => setIsFinishing('done'), 1500);
     }
   };
