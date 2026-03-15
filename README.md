@@ -8,6 +8,8 @@
 [![Groq](https://img.shields.io/badge/AI-Groq%20LLaMA-f59e0b?style=flat-square&logo=brain&logoColor=white)](https://groq.com/)
 [![TailwindCSS](https://img.shields.io/badge/Styling-TailwindCSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
+[![Live Demo Link] (career-craft-ai-rp.vercel.app)]
+
 ---
 
 **CareerCraft AI** is a cutting-edge platform designed to revolutionize the job application process. Using advanced LLMs, it transforms raw career data into professional, ATS-optimized resumes and high-end personal portfolio websites instantly.
