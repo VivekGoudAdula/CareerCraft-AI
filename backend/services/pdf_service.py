@@ -215,13 +215,19 @@ def _generate_reportlab_pdf(data, user):
     content.append(HRFlowable(width="100%", thickness=1, color=colors.black, spaceAfter=8))
     edu_list = data.get("education", [])
     if isinstance(edu_list, dict): edu_list = [edu_list]
+    _JUNK_EDU = {"not applicable", "n/a", "null", "none", "na", "", "university", "degree"}
     for edu in edu_list:
-        degree = edu.get('degree') or 'Degree'
-        college = edu.get('college') or edu.get('school') or 'University'
-        year = edu.get('year') or ''
-        
-        content.append(Paragraph(f"<b>{degree}</b>", styles['ExpTitle']))
-        content.append(Paragraph(f"{college} ({year})", styles['ResumeBodyText']))
+        degree = edu.get('degree', '').strip()
+        college = (edu.get('college') or edu.get('school', '')).strip()
+        year = edu.get('year', '').strip()
+        # Skip entries that are empty or AI-generated junk
+        if degree.lower() in _JUNK_EDU and college.lower() in _JUNK_EDU:
+            continue
+        if degree:
+            content.append(Paragraph(f"<b>{degree}</b>", styles['ExpTitle']))
+        if college:
+            year_str = f" ({year})" if year and year.lower() not in _JUNK_EDU else ""
+            content.append(Paragraph(f"{college}{year_str}", styles['ResumeBodyText']))
 
     doc.build(content)
     buffer.seek(0)
