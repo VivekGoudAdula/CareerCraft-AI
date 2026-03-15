@@ -4,8 +4,9 @@ import { Mail, Linkedin, Github, ArrowRight, AlignLeft, Globe, Award, Sparkles, 
 
 const downloadResume = async (userId) => {
   if (!userId) return;
+  const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
   try {
-    const response = await fetch(`http://localhost:8000/export-resume/${userId}`);
+    const response = await fetch(`${API_URL}/export-resume/${userId}`);
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
