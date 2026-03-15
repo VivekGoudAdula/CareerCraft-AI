@@ -161,12 +161,18 @@ const Onboarding = () => {
   const handleFinish = async () => {
     setIsFinishing(true);
     try {
-      const userId = localStorage.getItem('userId') || 'mock_id';
+      const userId = localStorage.getItem('userId');
+      const storedEmail = localStorage.getItem('userEmail') || profile.email;
+      const storedName = localStorage.getItem('userName') || profile.name;
+
       await api.post('/profile', {
-        user_id: userId,
-        profile_data: profile
+        user_id: userId,           // always send the real DB user id
+        profile_data: {
+          ...profile,
+          email: storedEmail,      // ensure correct email is always sent
+          name: storedName,
+        }
       });
-      setIsFinishing(true); // Stay in finishing state for animation
     } catch (err) {
       console.error("Profile update failed", err);
     } finally {

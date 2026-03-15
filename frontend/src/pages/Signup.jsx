@@ -29,6 +29,7 @@ const Signup = () => {
       localStorage.setItem('token', response.data.token || 'mock_token');
       localStorage.setItem('userId', response.data.id);
       localStorage.setItem('userName', formData.name);
+      localStorage.setItem('userEmail', formData.email);   // save email for onboarding
       navigate('/onboarding');
     } catch (err) {
       setError(err.response?.data?.detail || 'Signup failed. Please try again.');
