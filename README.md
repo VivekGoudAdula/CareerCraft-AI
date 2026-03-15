@@ -12,8 +12,6 @@
 
 **CareerCraft AI** is a cutting-edge platform designed to revolutionize the job application process. Using advanced LLMs, it transforms raw career data into professional, ATS-optimized resumes and high-end personal portfolio websites instantly.
 
-[Live Demo](https://ai.studio/apps/1b29e26a-9205-477a-b685-e6cca3913598) • [Backend Docs](http://localhost:8000/docs)
-
 </div>
 
 ## ✨ Key Features
